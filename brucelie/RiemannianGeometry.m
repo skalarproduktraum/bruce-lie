@@ -70,10 +70,7 @@ EinsteinTensor[metric_, x_] := Module[
 	Simplify[RicciTensor[metric, x] - RicciScalar[metric, x]]
 ];
 
-Commutator[form1_, form2_] := Module[
-	{},
-	Simplify[form1.form2 - form2.form1]
-];
+Commutator[form1_, form2_] := Simplify[form1.form2 - form2.form1]
 
 CommutatorCoefficients[form1_, form2_]:= Module[
 	{},

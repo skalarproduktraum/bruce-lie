@@ -23,7 +23,7 @@ brucelie::usage = "";
 
 brucelie::versionString = "this is bruce lie, r14
 (c) 2009 - 2011 ulrik guenther
-based upon work by tristan huebsch and";
+based upon work by tristan huebsch and pekka janhunen";
 
 Curvatures::usage = "";
 
@@ -83,18 +83,31 @@ CommutatorCoefficients::usage = "";
 
 TorsionTensor::usage = "";
 
+brucelie::InfoPackageOverride = "Info: using only custom packages.";
+
 Begin["`Private`"]
 (* Implementation of the package *)
 
-If[
-    TrueQ["sophusDebug"],
-    blDebug = True,
-    blDebug = False
-]
+blDebug = TrueQ["sophusDebug"];
 
-Needs["InnerGeometry`"]
-Needs["PlotFunctions`"]
-Needs["RiemannianGeometry`"]
+Print[brucelie::versionString];
+
+subpackages = If[ListQ[Global`bruceliePackages],
+			Message[brucelie::InfoPackageOverride];
+			Global`bruceliePackages,
+			{
+				"brucelie`InnerGeometry`",
+				"brucelie`PlotFunctions`",
+				"brucelie`RiemannianGeometry`"
+			}
+];
+
+Do[
+	Print["loading " <> p <> "..."];
+	Get[p],
+	{p, subpackages}
+]; 
+
 
 End[]
 
