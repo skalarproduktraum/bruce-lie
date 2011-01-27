@@ -2,13 +2,28 @@
 
 (* Created by the Wolfram Workbench Jan 27, 2011 *)
 
+(*
+ bruce lie
+ Differential Geometry Package, including stuff for General Relativity
+ by Ulrik Guenther
+
+The General Relativity/Ricci Calculus part is partly based on previous work by
+
+ * Tristan Huebsch, Howard University, Physics Dept.
+   http://homepage.mac.com/thubsch/default.html
+ * Pekka Janhunen, Finnish Meteorological Institute, Geophysics Dept.
+   http://www.space.fmi.fi/~pjanhune/
+
+*)
+
 BeginPackage["brucelie`"]
 (* Exported symbols added here with SymbolName::usage *) 
 
 brucelie::usage = "";
 
 brucelie::versionString = "this is bruce lie, r14
-(c) 2009 - 2011 ulrik guenther";
+(c) 2009 - 2011 ulrik guenther
+based upon work by tristan huebsch and";
 
 Curvatures::usage = "";
 
