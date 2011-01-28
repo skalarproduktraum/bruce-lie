@@ -83,6 +83,12 @@ CommutatorCoefficients::usage = "";
 
 TorsionTensor::usage = "";
 
+DarbouxFrame::usage = "";
+
+TangentialCurvature::usage = "";
+
+GeodeticCurvature::usage = "";
+
 brucelie::InfoPackageOverride = "Info: using only custom packages.";
 
 Begin["`Private`"]

@@ -1,8 +1,8 @@
 (* Mathematica package *)
 
-Curvatures[Curve_,Variable_]:=Module[
+Curvatures[Curve_, Variable_] := Block[
 {c=Curve,x=Variable,curv={},entry,UnitVectors,curvature,torsion,cvec,i},
-	UnitVectors=GramSchmidt[c,x];
+	UnitVectors = GramSchmidt[c,x];
 	If[Length[c]==3,
 		cvec=Cross[D[c,x],D[c,{x,2}]];
 		curvature=FullSimplify[
@@ -27,27 +27,33 @@ Curvatures[Curve_,Variable_]:=Module[
 			];
 		curv=Append[curv, entry];
 	];
-curv
+	curv
 ];
 
 VectorNorm[vector_]:=Module[{v=vector},
-FullSimplify[Sqrt[Sum[v[[i]]^2,{i,1,Length[v]}]]]
+	FullSimplify[
+		Sqrt[
+			Sum[v[[i]]^2, {i, 1, Length[v]}]
+		]
+	]
 ];
 
-GramSchmidt[Curve_,Variable_]:=Module[
-{c=Curve,x=Variable,UnitVectors={},vec,i},
-If[Length[UnitVectors]==0,
-	UnitVectors=Append[
-		UnitVectors, 
-		FullSimplify[D[c,x]/Sqrt[Sum[D[c[[i]],x]^2,{i,1,Length[c]}]]
-	]]
-];
-For[i=2,i<=Length[c],i++,
-	vec = D[c,{x, i}] - Sum[( D[c,{x, i}] . UnitVectors[[k]] ) UnitVectors[[k]], {k, 1, Length[UnitVectors]}];
-	vec = FullSimplify[vec / Sqrt[Sum[vec[[i]]^2,{i,1,Length[vec]}]]];
-	UnitVectors=Append[UnitVectors, vec];
+GramSchmidt[Curve_,Variable_] := Block[
+	{UnitVectors={},vec,i},
+	If[Length[UnitVectors]==0,
+		UnitVectors=Append[
+			UnitVectors, 
+			FullSimplify[
+				D[Curve, Variable]/Sqrt[Sum[D[Curve[[i]], Variable]^2, {i, 1, Length[Curve]}]]
+			]
+		]
 	];
-UnitVectors
+	For[i=2,i<=Length[Curve],i++,
+		vec = D[Curve, {Variable, i}] - Sum[( D[Curve,{Variable, i}] . UnitVectors[[k]] ) UnitVectors[[k]], {k, 1, Length[UnitVectors]}];
+		vec = FullSimplify[vec / Sqrt[Sum[vec[[i]]^2,{i,1,Length[vec]}]]];
+		UnitVectors=Append[UnitVectors, vec];
+	];
+	UnitVectors
 ];
 
 Curvature[Curve_, Variable_]:=Module[{},
@@ -55,57 +61,28 @@ Curvature[Curve_, Variable_]:=Module[{},
 ];
 
 Torsion[Curve_, Variable_]:=Module[{},
-    If[Length[c]<3, Print["Torsion only exists for n>2."]];
+    If[Length[c]<3, Print["Torsion is only defined for dim>2."]];
     Curvatures[Curve, Variable][[2]]
 ];
 
-UnitTangent[Curve_, Variable_]:=Module[{c=Curve,x=Variable,UnitVectors},
-	UnitVectors=GramSchmidt[c,x];
-UnitVectors[[1]]
+UnitTangent[Curve_, Variable_] := GramSchmidt[Curve, Variable][[1]]
+
+UnitNormal[Curve_, Variable_]:= GramSchmidt[Curve, Variable][[2]]
+
+Binormal[Curve_, Variable_] := GramSchmidt[Curve, Variable][[3]]
+
+OsculatingCircle[Curve_, Variable_, Point_]:=Module[{p},
+	(Curve/.Variable->p)+(1/Abs[Curvatures[Curve, Variable][[1]]]//.Variable->p)*UnitNormal[Curve, Variable]//.Variable->p + (1/Abs[Curvatures[Curve, Variable][[1]]]//.Variable->p) {Sin[Variable], -Cos[Variable]}
 ];
 
-UnitNormal[Curve_, Variable_]:=Module[{c=Curve,x=Variable,UnitVectors},
-	UnitVectors=GramSchmidt[c,x];
-UnitVectors[[2]]
-];
+Involute[Curve_, Variable_] := Curve + (1/Abs[Curvatures[Curve, Variable][[1]]])*UnitNormal[Curve, Variable]
 
-Binormal[Curve_, Variable_]:=Module[{c=Curve,x=Variable,UnitVectors},
-	UnitVectors=GramSchmidt[c,x];
-UnitVectors[[3]]
-];
+FirstFundamentalMatrix[func_, vars_] := 
+	Table[
+ 		Dot[D[func, vars[[i]]], D[func, vars[[j]]]], {i, Length[vars]}, {j, Length[vars]}
+ 	]
 
-OsculatingCircle[Curve_, Variable_, Point_]:=Module[{c=Curve,x=Variable,p=Point,UnitVectors,OCRadius,OCCenter,curvatures},
-	UnitVectors=GramSchmidt[c,x];
-	curvatures = Curvatures[Curve, x];
-	OCRadius = (1/Abs[curvatures[[1]]]//.x->p);
-	OCCenter = (c/.x->p)+OCRadius*UnitVectors[[2]]//.x->p;
-OCCenter + OCRadius {Sin[x], -Cos[x]}
-];
-
-Involute[Curve_, Variable_]:=Module[{c=Curve,x=Variable,UnitVectors,OCCenter,OCRadius},
-	UnitVectors=GramSchmidt[c,x];
-	OCRadius = (1/Abs[Curvatures[Curve, x][[1]]]);
-	OCCenter = c+OCRadius*UnitVectors[[2]];
-
-OCCenter
-];
-
-FirstFundamentalMatrix[func_, Variable1_, Variable2_]:=Module[{f=func,u1=Variable1,u2=Variable2,Du11,Du12,Du21,Du22},
-	Du11 = Dot[D[f, u1[[1]]], D[f, u1[[1]]]];
-	Du12 = Dot[D[f, u1[[1]]], D[f, u2[[1]]]];
-	Du21 = Dot[D[f, u2[[1]]], D[f, u1[[1]]]];
-	Du22 = Dot[D[f, u2[[1]]], D[f, u2[[1]]]];
-	
-	{{Du11, Du12}, {Du21, Du22}}/.{u1[[1]]->u1[[2]], u2[[1]]->u2[[2]]}
-];
-
-SurfaceNormalVector[func_, Variable1_, Variable2_]:=Module[{f=func,u1=Variable1,u2=Variable2,CrossProduct,Du1,Du2},
-	Du1 = D[f, u1[[1]]];
-	Du2 = D[f, u2[[1]]];
-	CrossProduct = Cross[Du1, Du2];
-
-	(CrossProduct/Sqrt[Sum[CrossProduct[[i]]^2,{i, 1, Length[CrossProduct]}]])/.{u1[[1]]->u1[[2]], u2[[1]]->u2[[2]]}
-];
+SurfaceNormalVector[func_, vars_] := (#/VectorNorm[#])&/@Apply[Cross, Transpose[D[func, {vars}]]]
 
 SecondFundamentalMatrix[func_, Variable1_, Variable2_]:=Module[{f=func,u1=Variable1,u2=Variable2,h11,h12,h21,h22},
 	h11 = Dot[
@@ -152,6 +129,30 @@ MeanCurvature[func_, Variable1_, Variable2_]:=Module[{f=func,u1=Variable1,u2=Var
 
 GaussCurvature[func_, Variable1_, Variable2_]:=Module[{f=func,u1=Variable1,u2=Variable2},
 	Det[WeingartenMatrix[f, u1, u2]]
+];
+
+TangentialCurvature[curve_, surface_, VariableCurve_, Variable1Surface_, Variable2Surface_] := Block[{},
+	{
+		D[curve, {VariableCurve[[1]], 2}], 
+		SurfaceNormalVector[
+			surface, 
+			{
+				Variable1Surface[[1]], Variable2Surface[[1]], (curve/.{VariableCurve[[1]]->VariableCurve[[2]]})[[1]]
+			},
+			{
+				Variable1Surface[[2]], Variable2Surface[[1]], (curve/.{VariableCurve[[1]]->VariableCurve[[2]]})[[2]]
+			}
+		],
+		D[curve, {VariableCurve[[1]], 1}]
+	}
+];
+
+GeodeticCurvature[curve_, surface_, VariableCurve_, Variable1Surface_, Variable2Surface_] := Block[{},
+	VectorNorm[TangentialCurvature[curve, surface, VariableCurve, Variable1Surface, Variable2Surface]]
+];
+
+DarbouxFrame[curve_, variable_] := Block[{}, 
+	GramSchmidt[curve, variable][[1;;3]]
 ];
 
 PrincCurvatures[func_, Variable1_, Variable2_]:=Module[{f=func,u1=Variable1,u2=Variable2},
