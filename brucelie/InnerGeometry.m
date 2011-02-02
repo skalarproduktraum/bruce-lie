@@ -158,3 +158,17 @@ DarbouxFrame[curve_, variable_] := Block[{},
 PrincCurvatures[func_, Variable1_, Variable2_]:=Module[{f=func,u1=Variable1,u2=Variable2},
 	Eigenvalues[WeingartenMatrix[f, u1, u2]]
 ];
+
+UmbilicQ[func_, variable_, point_] := Block[{},
+	If[Length[DeleteDuplicates[Curvatures[func, variable]/.{variable->point}]] == 1,
+		True,
+		False
+	]
+];
+
+FlatUmbilicQ[func_, variable_, point_] := Block[{},
+	If[DeleteDuplicates[Curvatures[func, variable]/.{variable->point}] == {0},
+		True,
+		False
+	]
+];
