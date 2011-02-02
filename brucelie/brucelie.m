@@ -89,6 +89,10 @@ TangentialCurvature::usage = "";
 
 GeodeticCurvature::usage = "";
 
+UmbilicalQ::usage = "";
+
+FlatUmbilicalQ::usage = "";
+
 brucelie::InfoPackageOverride = "Info: using only custom packages.";
 
 Begin["`Private`"]
