@@ -159,6 +159,8 @@ PrincCurvatures[func_, Variable1_, Variable2_]:=Module[{f=func,u1=Variable1,u2=V
 	Eigenvalues[WeingartenMatrix[f, u1, u2]]
 ];
 
+PrincCurvatureQ[func_, vars_, vector_] := MemberQ[PrincCurvatures[func, variable1, variable2], vector];
+
 UmbilicQ[func_, variable_, point_] := Block[{},
 	If[Length[DeleteDuplicates[Curvatures[func, variable]/.{variable->point}]] == 1,
 		True,
