@@ -77,10 +77,12 @@ OsculatingCircle[Curve_, Variable_, Point_]:=Module[{p},
 
 Involute[Curve_, Variable_] := Curve + (1/Abs[Curvatures[Curve, Variable][[1]]])*UnitNormal[Curve, Variable]
 
+(* surface functions *)
+
 FirstFundamentalMatrix[func_, vars_] := 
 	Table[
  		Dot[D[func, vars[[i]]], D[func, vars[[j]]]], {i, Length[vars]}, {j, Length[vars]}
- 	]
+ 	];
 
 SurfaceNormalVector[func_, vars_] := (#/VectorNorm[#])&/@Apply[Cross, Transpose[D[func, {vars}]]]
 
