@@ -31,10 +31,8 @@ Curvatures[Curve_, Variable_] := Block[
 ];
 
 VectorNorm[vector_]:=Module[{v=vector},
-	FullSimplify[
-		Sqrt[
-			Sum[v[[i]]^2, {i, 1, Length[v]}]
-		]
+	Sqrt[
+		Sum[v[[i]]^2, {i, 1, Length[v]}]
 	]
 ];
 
@@ -84,28 +82,12 @@ FirstFundamentalMatrix[func_, vars_] :=
  		Dot[D[func, vars[[i]]], D[func, vars[[j]]]], {i, Length[vars]}, {j, Length[vars]}
  	];
 
-SurfaceNormalVector[func_, vars_] := (#/VectorNorm[#])&/@Apply[Cross, Transpose[D[func, {vars}]]]
+SurfaceNormalVector[func_, vars_] := Map[#/VectorNorm[#]&, Apply[Cross, Transpose[D[func, {vars}]]], {0}];
 
-SecondFundamentalMatrix[func_, Variable1_, Variable2_]:=Module[{f=func,u1=Variable1,u2=Variable2,h11,h12,h21,h22},
-	h11 = Dot[
-			D[SurfaceNormalVector[f, {u1[[1]],u1[[1]]}, {u2[[1]],u2[[1]]}], u1[[1]]],
-			D[f, u1[[1]]]
-		];
-	h12 = Dot[
-			D[SurfaceNormalVector[f, {u1[[1]],u1[[1]]}, {u2[[1]],u2[[1]]}], u1[[1]]],
-			D[f, u2[[1]]]
-		];
-	h21 = Dot[
-			D[SurfaceNormalVector[f, {u1[[1]],u1[[1]]}, {u2[[1]],u2[[1]]}], u2[[1]]],
-			D[f, u1[[1]]]
-		];
-	h22 = Dot[
-			D[SurfaceNormalVector[f, {u1[[1]],u1[[1]]}, {u2[[1]],u2[[1]]}], u2[[1]]],
-			D[f, u2[[1]]]
-		];
-
-	-{{h11, h12},{h21, h22}}/.{u1[[1]]->u1[[2]], u2[[1]]->u2[[2]]}
-];
+SecondFundamentalMatrix[func_, vars_] := 
+	Table[
+		-Dot[D[SurfaceNormalVector[func, vars], vars[[i]]], D[func, vars[[j]]]], {i, Length[vars]}, {j, Length[vars]}
+	];
 
 WeingartenMatrix[func_, Variable1_, Variable2_]:=Module[{f=func,u1=Variable1,u2=Variable2},
 	Dot[
