@@ -65,6 +65,8 @@ GaussCurvature::usage = "";
 
 PrincCurvatures::usage = "";
 
+PrincCurvatureQ::usage = "";
+
 ChristoffelSymbols::usage = "";
 
 RiemannTensor::usage = "";
@@ -93,7 +95,11 @@ UmbilicalQ::usage = "";
 
 FlatUmbilicalQ::usage = "";
 
+(* info messages *)
+
 brucelie::InfoPackageOverride = "Info: using only custom packages.";
+
+(* error messages *)
 
 Begin["`Private`"]
 (* Implementation of the package *)
